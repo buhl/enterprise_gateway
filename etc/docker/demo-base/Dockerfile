@@ -85,7 +85,7 @@ RUN mkdir /home/$NB_USER/work && \
     fix-permissions /home/$NB_USER
 
 # DOWNLOAD HADOOP AND SPARK
-RUN curl -s http://www.us.apache.org/dist/hadoop/common/hadoop-$HADOOP_VER/hadoop-$HADOOP_VER.tar.gz | tar -xz -C /usr/hdp/current
+RUN curl -Ls http://www.us.apache.org/dist/hadoop/common/hadoop-$HADOOP_VER/hadoop-$HADOOP_VER.tar.gz | tar -xz -C /usr/hdp/current
 RUN curl -s https://archive.apache.org/dist/spark/spark-${SPARK_VER}/spark-${SPARK_VER}-bin-hadoop2.7.tgz | tar -xz -C /usr/hdp/current
 
 # SETUP SPARK AND HADOOP SYMLINKS
@@ -114,11 +114,11 @@ RUN conda install --yes --quiet \
 
 USER $NB_UID
 
-RUN Rscript -e 'install.packages(c("IRkernel","versions"), repos="http://cran.cnr.berkeley.edu", lib="/opt/conda/lib/R/library")' \
-            -e 'IRkernel::installspec(prefix = "/usr/local")' \
-            -e 'versions::install.versions("SparkR", "2.4.1", lib="/opt/conda/lib/R/library")' && \
-    fix-permissions $ANACONDA_HOME && \
-    fix-permissions /home/$NB_USER
+#RUN Rscript -e 'install.packages(c("IRkernel","versions"), repos="https://mirrors.dotsrc.org/cran/", lib="/opt/conda/lib/R/library")' \
+#            -e 'IRkernel::installspec(prefix = "/usr/local")' \
+#            -e 'versions::install.versions("SparkR", "2.4.1", lib="/opt/conda/lib/R/library")' && \
+#    fix-permissions $ANACONDA_HOME && \
+#    fix-permissions /home/$NB_USER
 
 # SETUP HADOOP CONFIGS
 RUN sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64\nexport HADOOP_PREFIX=/usr/hdp/current/hadoop\nexport HADOOP_HOME=/usr/hdp/current/hadoop\n:' $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh

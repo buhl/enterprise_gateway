@@ -1,4 +1,14 @@
 #!/bin/bash
+set -x
+
+GNAME=$(stat -c %G /var/run/docker.sock)
+if [[ "$GNAME" != "UNKNOWN" ]]; then
+    usermod -aG $GNAME jovyan;
+else
+    GID=$(stat -c %g /var/run/docker.sock)
+    groupadd -g $GID docker
+    usermod -aG docker jovyan;
+fi
 
 #export ANACONDA_HOME=/opt/conda
 #export JAVA_HOME=/usr/java/default
@@ -30,11 +40,9 @@ export EG_KERNEL_WHITELIST=${EG_KERNEL_WHITELIST:-"['r_docker','python_docker','
 
 echo "Starting Jupyter Enterprise Gateway..."
 
-exec jupyter enterprisegateway \
+# --KernelSpecManager.whitelist=${EG_KERNEL_WHITELIST} \
+su --preserve-environment jovyan -c "/opt/conda/bin/jupyter enterprisegateway \
 	--log-level=${EG_LOG_LEVEL} \
-	--KernelSpecManager.whitelist=${EG_KERNEL_WHITELIST} \
 	--MappingKernelManager.cull_idle_timeout=${EG_CULL_IDLE_TIMEOUT} \
 	--MappingKernelManager.cull_interval=${EG_CULL_INTERVAL} \
-	--MappingKernelManager.cull_connected=${EG_CULL_CONNECTED}
-
-
+	--MappingKernelManager.cull_connected=${EG_CULL_CONNECTED}"

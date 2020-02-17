@@ -27,9 +27,7 @@ ADD jupyter_enterprise_gateway_kernel_image_files*.tar.gz /usr/local/bin/
 
 COPY start-enterprise-gateway.sh /usr/local/bin/
 
-RUN chown jovyan:users /usr/local/bin/start-enterprise-gateway.sh && \
-	chmod 0755 /usr/local/bin/start-enterprise-gateway.sh && \
-	touch /usr/local/share/jupyter/enterprise-gateway.log && \
+RUN touch /usr/local/share/jupyter/enterprise-gateway.log && \
 	chown -R jovyan:users /usr/local/share/jupyter /usr/local/bin/kernel-launchers && \
 	chmod 0666 /usr/local/share/jupyter/enterprise-gateway.log && \
 	rm -f /usr/local/bin/bootstrap-kernel.sh
@@ -41,7 +39,7 @@ RUN curl -s https://archive.apache.org/dist/spark/spark-${SPARK_VER}/spark-${SPA
     mkdir -p /usr/hdp/current && \
     ln -s ${SPARK_HOME}-${SPARK_VER}-bin-hadoop2.7 /usr/hdp/current/spark2-client
 
-USER jovyan
+#USER jovyan
 
 CMD ["/usr/local/bin/start-enterprise-gateway.sh"]
 
